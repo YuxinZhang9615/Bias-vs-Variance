@@ -1,13 +1,16 @@
 library(shiny)
+library(png)
 
 shinyUI(navbarPage("Bias + Variance",
                    tabPanel("Large Bias + large variance",
                             fluidRow(
                               column(4,plotOutput("target1", click = 'Click1')),
-                              column(4,offset = 2, 
+                              column(8, 
                                      conditionalPanel(
                                        condition = 'input.submit1 != 0',
-                                       plotOutput("hist1")))),
+                                       fluidRow(
+                                         column(5,plotOutput("plot1a")),
+                                         column(5,plotOutput("plot1b")))))),
                             fluidRow(
                               column(4, offset = 4, actionButton("submit1","Submit"))
                             ),

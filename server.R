@@ -1,5 +1,5 @@
 library(shiny)
-
+library(png)
 shinyServer(function(input, output,session) {
   var1 <- reactiveValues(x = NULL, y = NULL)
   var2 <- reactiveValues(x = NULL, y = NULL)
@@ -34,11 +34,18 @@ shinyServer(function(input, output,session) {
     lines(var1$x,var1$y, xlim = c(-5,5), ylim = c(-5,5),type = 'p', pch = 20)
   },height = 400, width = 400)
   
-  output$hist1 <- renderPlot({
-    curve(dnorm(x, mean = sqrt(mean(var1$x)^2 + mean(var1$y)^2), sd = sqrt((sum((var1$x-mean(var1$x))^2 + (var1$y-mean(var1$y))^2))/length(var1$x))),xlim = c(-5,5),ylab = '')
-    abline(v=0)
+  output$plot1a <- renderPlot({
+    plot(x = -3:3,xlim = c(-6,6), type = "n", xlab = "", ylab = "", main = "Bias")
+    box(col = "red")
+    abline(v=0,col = "red")
+    abline(v = sqrt(mean(var1$x)^2 + mean(var1$y)^2))
+
   },height = 400, width = 400)
   
+  output$plot1b <- renderPlot({
+    plot(density(sqrt(var1$x^2 + var1$y^2)), xlab = '', ylab = '', main = 'Reliability')
+    box(col = "red")
+  },height = 400, width = 400)
   
 
 ###Repeat three times for the other three tabs
