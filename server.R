@@ -27,10 +27,6 @@ shinyServer(function(input, output,session) {
     abline(v = sqrt(mean(x)^2 + mean(y)^2))
   }
   
-  plotB = function(x,y){
-    plot(density(sqrt(x^2 + y^2)), xlab = '', ylab = '', main = 'Reliability')
-    box(col = "red")
-  }
     
   observe({
     # Initially will be empty
@@ -54,7 +50,7 @@ shinyServer(function(input, output,session) {
   },height = 400, width = 400)
   
   output$plot1b <- renderPlot({
-    plotB(var1$x,var1$y)
+    plot(density(dist(cbind(var1$x,var1$y))),xlim = c(-2,12),xlab = "", main = "Reliability")
   },height = 400, width = 400)
   
 
@@ -78,7 +74,7 @@ shinyServer(function(input, output,session) {
   },height = 400, width = 400)
   
   output$plot2b <- renderPlot({
-    plotB(var2$x,var2$y)
+    plot(density(dist(cbind(var2$x,var2$y))),xlim = c(-2,12),xlab = "", main = "Reliability")
   },height = 400, width = 400)
   
   observe({
@@ -94,9 +90,11 @@ shinyServer(function(input, output,session) {
   output$target3 <- renderPlot({
     plotTarget(var3$x,var3$y)
   },height = 400, width = 400)
-  output$hist3 <- renderPlot({
-    curve(dnorm(x, mean = sqrt(mean(var3$x)^2 + mean(var3$y)^2), sd = sqrt((sum((var3$x-mean(var3$x))^2 + (var3$y-mean(var3$y))^2))/length(var3$x))),xlim = c(-5,5),ylab = '')
-    abline(v=0)
+  output$plot3a <- renderPlot({
+    plotA(var3$x,var3$y)
+  },height = 400, width = 400)
+  output$plot3b <- renderPlot({
+    plot(density(dist(cbind(var3$x,var3$y))),xlim = c(-2,12),xlab = "", main = "Reliability")
   },height = 400, width = 400)
   
   observe({
@@ -112,9 +110,11 @@ shinyServer(function(input, output,session) {
   output$target4 <- renderPlot({
     plotTarget(var4$x,var4$y)
   },height = 400, width = 400)
-  output$hist4 <- renderPlot({
-    curve(dnorm(x, mean = sqrt(mean(var4$x)^2 + mean(var4$y)^2), sd = sqrt((sum((var4$x-mean(var4$x))^2 + (var4$y-mean(var4$y))^2))/length(var4$x))),xlim = c(-5,5),ylab = '')
-    abline(v=0)
+  output$plot4a <- renderPlot({
+    plotA(var4$x,var4$y)
+  },height = 400, width = 400)
+  output$plot4b <- renderPlot({
+    plot(density(dist(cbind(var4$x,var4$y))),xlim = c(-2,12),xlab = "", main = "Reliability")
   },height = 400, width = 400)
  
 

@@ -44,7 +44,7 @@ shinyUI(navbarPage("Bias + Variance",
                               column(4,plotOutput("target3", click = 'Click3')),
                               column(8,
                                      conditionalPanel(
-                                       condition = 'input.submit2 != 0',
+                                       condition = 'input.submit3 != 0',
                                        fluidRow(
                                          column(5,plotOutput("plot3a")),
                                          column(5,plotOutput("plot3b")))))),
@@ -63,7 +63,7 @@ shinyUI(navbarPage("Bias + Variance",
                               column(4,plotOutput("target4", click = 'Click4')),
                               column(8,
                                      conditionalPanel(
-                                       condition = 'input.submit2 != 0',
+                                       condition = 'input.submit4 != 0',
                                        fluidRow(
                                          column(5,plotOutput("plot4a")),
                                          column(5,plotOutput("plot4b")))))),
