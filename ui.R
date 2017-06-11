@@ -23,10 +23,12 @@ shinyUI(navbarPage("Bias + Variance",
                    tabPanel("Large Bias + small varianve",
                             fluidRow(
                               column(4,plotOutput("target2", click = 'Click2')),
-                              column(4,offset = 2, 
+                              column(8,
                                      conditionalPanel(
                                        condition = 'input.submit2 != 0',
-                                       plotOutput("hist2")))),
+                                       fluidRow(
+                                         column(5,plotOutput("plot2a")),
+                                         column(5,plotOutput("plot2b")))))),
                             fluidRow(
                               column(4, offset = 4, actionButton("submit2","Submit"))
                             ),
@@ -40,10 +42,12 @@ shinyUI(navbarPage("Bias + Variance",
                    tabPanel("No Bias + large variance",
                             fluidRow(
                               column(4,plotOutput("target3", click = 'Click3')),
-                              column(4,offset = 2, 
+                              column(8,
                                      conditionalPanel(
-                                       condition = 'input.submit3 != 0',
-                                       plotOutput("hist3")))),
+                                       condition = 'input.submit2 != 0',
+                                       fluidRow(
+                                         column(5,plotOutput("plot3a")),
+                                         column(5,plotOutput("plot3b")))))),
                             fluidRow(
                               column(4, offset = 4, actionButton("submit3","Submit"))
                             ),
@@ -57,10 +61,12 @@ shinyUI(navbarPage("Bias + Variance",
                    tabPanel("No Bias + small variance",
                             fluidRow(
                               column(4,plotOutput("target4", click = 'Click4')),
-                              column(4,offset = 2, 
+                              column(8,
                                      conditionalPanel(
-                                       condition = 'input.submit4 != 0',
-                                       plotOutput("hist4")))),
+                                       condition = 'input.submit2 != 0',
+                                       fluidRow(
+                                         column(5,plotOutput("plot4a")),
+                                         column(5,plotOutput("plot4b")))))),
                             fluidRow(
                               column(4, offset = 4, actionButton("submit4","Submit"))
                             ),

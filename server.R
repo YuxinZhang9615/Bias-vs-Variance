@@ -6,6 +6,31 @@ shinyServer(function(input, output,session) {
   var3 <- reactiveValues(x = NULL, y = NULL)
   var4 <- reactiveValues(x = NULL, y = NULL)
 
+  plotTarget = function(x,y){
+    #Get image
+    isolate(ima <- readPNG("t6.png"))
+    
+    #Set up the plot area
+    isolate(plot(x=-5:5,ylim=c(-5,5),xlim=c(-5,5),type='p',xlab = ''))
+    
+    #Get the plot information so the image will fill the plot box, and draw it
+    isolate(lim <- par())
+    isolate(rasterImage(ima, lim$usr[1], lim$usr[3], lim$usr[2], lim$usr[4]))
+    isolate(grid())
+    lines(x,y, xlim = c(-5,5), ylim = c(-5,5),type = 'p', pch = 20)
+  }
+  
+  plotA = function(x,y){
+    plot(x = -3:3,xlim = c(-6,6), type = "n", xlab = "", ylab = "", main = "Bias")
+    box(col = "red")
+    abline(v=0,col = "red")
+    abline(v = sqrt(mean(x)^2 + mean(y)^2))
+  }
+  
+  plotB = function(x,y){
+    plot(density(sqrt(x^2 + y^2)), xlab = '', ylab = '', main = 'Reliability')
+    box(col = "red")
+  }
     
   observe({
     # Initially will be empty
@@ -20,31 +45,16 @@ shinyServer(function(input, output,session) {
   })
   
   output$target1 <- renderPlot({
+    plotTarget(var1$x,var1$y)
     
-    #Get image
-    isolate(ima <- readPNG("t6.png"))
-    
-    #Set up the plot area
-    isolate(plot(x=-5:5,ylim=c(-5,5),xlim=c(-5,5),type='p',xlab = ''))
-    
-    #Get the plot information so the image will fill the plot box, and draw it
-    isolate(lim <- par())
-    isolate(rasterImage(ima, lim$usr[1], lim$usr[3], lim$usr[2], lim$usr[4]))
-    isolate(grid())
-    lines(var1$x,var1$y, xlim = c(-5,5), ylim = c(-5,5),type = 'p', pch = 20)
   },height = 400, width = 400)
   
   output$plot1a <- renderPlot({
-    plot(x = -3:3,xlim = c(-6,6), type = "n", xlab = "", ylab = "", main = "Bias")
-    box(col = "red")
-    abline(v=0,col = "red")
-    abline(v = sqrt(mean(var1$x)^2 + mean(var1$y)^2))
-
+    plotA(var1$x,var1$y)
   },height = 400, width = 400)
   
   output$plot1b <- renderPlot({
-    plot(density(sqrt(var1$x^2 + var1$y^2)), xlab = '', ylab = '', main = 'Reliability')
-    box(col = "red")
+    plotB(var1$x,var1$y)
   },height = 400, width = 400)
   
 
@@ -60,17 +70,15 @@ shinyServer(function(input, output,session) {
     })
   })
   output$target2 <- renderPlot({
-    isolate(ima <- readPNG("t6.png"))
-    isolate(plot(x=-5:5,ylim=c(-5,5),xlim=c(-5,5),type='p',xlab = ''))
-    
-    isolate(lim <- par())
-    isolate(rasterImage(ima, lim$usr[1], lim$usr[3], lim$usr[2], lim$usr[4]))
-    isolate(grid())
-    lines(var2$x,var2$y, xlim = c(-5,5), ylim = c(-5,5),type = 'p', pch = 20)
+    plotTarget(var2$x,var2$y)
   },height = 400, width = 400)
-  output$hist2 <- renderPlot({
-    curve(dnorm(x, mean = sqrt(mean(var2$x)^2 + mean(var2$y)^2), sd = sqrt((sum((var2$x-mean(var2$x))^2 + (var2$y-mean(var2$y))^2))/length(var2$x))),xlim = c(-5,5),ylab = '')
-    abline(v=0)
+  
+  output$plot2a <- renderPlot({
+    plotA(var2$x,var2$y)
+  },height = 400, width = 400)
+  
+  output$plot2b <- renderPlot({
+    plotB(var2$x,var2$y)
   },height = 400, width = 400)
   
   observe({
@@ -84,13 +92,7 @@ shinyServer(function(input, output,session) {
     })
   })
   output$target3 <- renderPlot({
-    isolate(ima <- readPNG("t6.png"))
-    isolate(plot(x=-5:5,ylim=c(-5,5),xlim=c(-5,5),type='p',xlab = ''))
-    
-    isolate(lim <- par())
-    isolate(rasterImage(ima, lim$usr[1], lim$usr[3], lim$usr[2], lim$usr[4]))
-    isolate(grid())
-    lines(var3$x,var3$y, xlim = c(-5,5), ylim = c(-5,5),type = 'p', pch = 20)
+    plotTarget(var3$x,var3$y)
   },height = 400, width = 400)
   output$hist3 <- renderPlot({
     curve(dnorm(x, mean = sqrt(mean(var3$x)^2 + mean(var3$y)^2), sd = sqrt((sum((var3$x-mean(var3$x))^2 + (var3$y-mean(var3$y))^2))/length(var3$x))),xlim = c(-5,5),ylab = '')
@@ -108,13 +110,7 @@ shinyServer(function(input, output,session) {
     })
   })
   output$target4 <- renderPlot({
-    isolate(ima <- readPNG("t6.png"))
-    isolate(plot(x=-5:5,ylim=c(-5,5),xlim=c(-5,5),type='p',xlab = ''))
-    
-    isolate(lim <- par())
-    isolate(rasterImage(ima, lim$usr[1], lim$usr[3], lim$usr[2], lim$usr[4]))
-    isolate(grid())
-    lines(var4$x,var4$y, xlim = c(-5,5), ylim = c(-5,5),type = 'p', pch = 20)
+    plotTarget(var4$x,var4$y)
   },height = 400, width = 400)
   output$hist4 <- renderPlot({
     curve(dnorm(x, mean = sqrt(mean(var4$x)^2 + mean(var4$y)^2), sd = sqrt((sum((var4$x-mean(var4$x))^2 + (var4$y-mean(var4$y))^2))/length(var4$x))),xlim = c(-5,5),ylab = '')
