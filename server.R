@@ -1,5 +1,7 @@
 library(shiny)
 library(png)
+library(shinyBS)
+
 shinyServer(function(input, output,session) {
   var1 <- reactiveValues(x = NULL, y = NULL)
   var2 <- reactiveValues(x = NULL, y = NULL)
@@ -7,6 +9,9 @@ shinyServer(function(input, output,session) {
   var4 <- reactiveValues(x = NULL, y = NULL)
   
 
+ 
+
+  
 #Create function for ploting the target  
   plotTarget = function(x,y){
     #Get image
@@ -51,17 +56,29 @@ shinyServer(function(input, output,session) {
     })
   })
   
+  #Reset the button to FALSE so that all the conditionalPanel will disappear
+  observeEvent(input$submit1,{{
+    updateButton(session,"submit1",label = "Try",style = "danger")
+  }})
+  #Reset(clear) the clicked points
+  observe({
+    if (input$submit1 == FALSE){
+      var1$x <- NULL
+      var1$y <- NULL
+    }
+  })
+  
   output$target1 <- renderPlot({
     plotTarget(var1$x,var1$y)
-  },height = 400, width = 400)
+  },height = 380, width = 380)
   
   output$plot1a <- renderPlot({
     plotA(var1$x,var1$y)
-  },height = 400, width = 400)
+  },height = 380, width = 380)
   
   output$plot1b <- renderPlot({
     plotB(var1$x,var1$y)
-  },height = 400, width = 400)
+  },height = 380, width = 380)
   
   #Distance between the center of target(population) and the center of the cloud of dots(ave. of samples)
   output$bias1 <- renderText({
@@ -93,17 +110,29 @@ shinyServer(function(input, output,session) {
       var2$y <- c(var2$y, input$Click2$y)
     })
   })
+  
+  #Reset the button to FALSE so that all the conditionalPanel will disappear
+  observeEvent(input$submit2,{{
+    updateButton(session,"submit2",label = "Try",style = "danger")
+  }})
+  #Reset(clear) the clicked points
+  observe({
+    if (input$submit2 == FALSE){
+      var2$x <- NULL
+      var2$y <- NULL
+    }
+  })
   output$target2 <- renderPlot({
     plotTarget(var2$x,var2$y)
-  },height = 400, width = 400)
+  },height = 380, width = 380)
   
   output$plot2a <- renderPlot({
     plotA(var2$x,var2$y)
-  },height = 400, width = 400)
+  },height = 380, width = 380)
   
   output$plot2b <- renderPlot({
     plotB(var2$x,var2$y)
-  },height = 400, width = 400)
+  },height = 380, width = 380)
   
   output$bias2 <- renderText({
     print(sqrt(mean(var2$x)^2 + mean(var2$y)^2))
@@ -132,17 +161,28 @@ shinyServer(function(input, output,session) {
       var3$y <- c(var3$y, input$Click3$y)
     })
   })
+  #Reset the button to FALSE so that all the conditionalPanel will disappear
+  observeEvent(input$submit3,{{
+    updateButton(session,"submit3",label = "Try",style = "danger")
+  }})
+  #Reset(clear) the clicked points
+  observe({
+    if (input$submit1 == FALSE){
+      var3$x <- NULL
+      var3$y <- NULL
+    }
+  })
   output$target3 <- renderPlot({
     plotTarget(var3$x,var3$y)
-  },height = 400, width = 400)
+  },height = 380, width = 380)
   
   output$plot3a <- renderPlot({
     plotA(var3$x,var3$y)
-  },height = 400, width = 400)
+  },height = 380, width = 380)
   
   output$plot3b <- renderPlot({
     plotB(var3$x,var3$y)
-  },height = 400, width = 400)
+  },height = 380, width = 380)
   
   output$bias3 <- renderText({
     print(sqrt(mean(var3$x)^2 + mean(var3$y)^2))
@@ -171,17 +211,28 @@ shinyServer(function(input, output,session) {
       var4$y <- c(var4$y, input$Click4$y)
     })
   })
+  #Reset the button to FALSE so that all the conditionalPanel will disappear
+  observeEvent(input$submit4,{{
+    updateButton(session,"submit4",label = "Try",style = "danger")
+  }})
+  #Reset(clear) the clicked points
+  observe({
+    if (input$submit4 == FALSE){
+      var4$x <- NULL
+      var4$y <- NULL
+    }
+  })
   output$target4 <- renderPlot({
     plotTarget(var4$x,var4$y)
-  },height = 400, width = 400)
+  },height = 380, width = 380)
   
   output$plot4a <- renderPlot({
     plotA(var4$x,var4$y)
-  },height = 400, width = 400)
+  },height = 380, width = 380)
   
   output$plot4b <- renderPlot({
     plotB(var4$x,var4$y)
-  },height = 400, width = 400)
+  },height = 380, width = 380)
   
   output$bias4 <- renderText({
     print(sqrt(mean(var4$x)^2 + mean(var4$y)^2))
