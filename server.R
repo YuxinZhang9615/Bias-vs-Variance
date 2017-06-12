@@ -1,18 +1,50 @@
 library(shiny)
-
+library(png)
 shinyServer(function(input, output,session) {
   var1 <- reactiveValues(x = NULL, y = NULL)
   var2 <- reactiveValues(x = NULL, y = NULL)
   var3 <- reactiveValues(x = NULL, y = NULL)
   var4 <- reactiveValues(x = NULL, y = NULL)
+  
 
+#Create function for ploting the target  
+  plotTarget = function(x,y){
+    #Get image
+    isolate(ima <- readPNG("t6.png"))
     
+    #Set up the plot area
+    isolate(plot(x=-5:5,ylim=c(-5,5),xlim=c(-5,5),type='p',xlab = '',ylab = ''))
+    
+    #Get the plot information so the image will fill the plot box, and draw it
+    isolate(lim <- par())
+    isolate(rasterImage(ima, lim$usr[1], lim$usr[3], lim$usr[2], lim$usr[4]))
+    isolate(grid())
+    lines(x,y, xlim = c(-5,5), ylim = c(-5,5),type = 'p', pch = 20)
+  }
+  
+#Create function for ploting the bias plot  
+  plotA = function(x,y){
+    plot(x = -3:3,xlim = c(-6,6), type = "n", xlab = "", ylab = "", main = "Bias")
+    box(col = "red")
+    abline(v=0,col = "red")
+    abline(v = sqrt(mean(x)^2 + mean(y)^2))
+  }
+
+#Create function for ploting the reliability plot  
+  plotB = function(x,y){
+    #Density plot of the distance between each dots
+    plot(density(dist(cbind(x,y))),xlim = c(-2,12),xlab = "", main = "Reliability")
+    abline(v = mean(dist(cbind(x,y))))
+    box(col = "red")
+  }
+  
+##Use above three functions to code the output for tab1     
   observe({
     # Initially will be empty
     if (is.null(input$Click1)){
       return()
     }
-    
+    #Save the coordinates of clicked points as two vectors
     isolate({
       var1$x <- c(var1$x, input$Click1$x)
       var1$y <- c(var1$y, input$Click1$y)
@@ -20,25 +52,34 @@ shinyServer(function(input, output,session) {
   })
   
   output$target1 <- renderPlot({
-    
-    #Get image
-    isolate(ima <- readPNG("t6.png"))
-    
-    #Set up the plot area
-    isolate(plot(x=-5:5,ylim=c(-5,5),xlim=c(-5,5),type='p',xlab = ''))
-    
-    #Get the plot information so the image will fill the plot box, and draw it
-    isolate(lim <- par())
-    isolate(rasterImage(ima, lim$usr[1], lim$usr[3], lim$usr[2], lim$usr[4]))
-    isolate(grid())
-    lines(var1$x,var1$y, xlim = c(-5,5), ylim = c(-5,5),type = 'p', pch = 20)
+    plotTarget(var1$x,var1$y)
   },height = 400, width = 400)
   
-  output$hist1 <- renderPlot({
-    curve(dnorm(x, mean = sqrt(mean(var1$x)^2 + mean(var1$y)^2), sd = sqrt((sum((var1$x-mean(var1$x))^2 + (var1$y-mean(var1$y))^2))/length(var1$x))),xlim = c(-5,5),ylab = '')
-    abline(v=0)
+  output$plot1a <- renderPlot({
+    plotA(var1$x,var1$y)
   },height = 400, width = 400)
   
+  output$plot1b <- renderPlot({
+    plotB(var1$x,var1$y)
+  },height = 400, width = 400)
+  
+  #Distance between the center of target(population) and the center of the cloud of dots(ave. of samples)
+  output$bias1 <- renderText({
+    print(sqrt(mean(var1$x)^2 + mean(var1$y)^2))
+  })
+  
+  #Average distance between each dots
+  output$reliability1 <- renderText({
+    print(mean(dist(cbind(var1$x,var1$y))))
+  })
+  
+  output$answer1 <- renderText({
+    #When the measurement of bias > 2 and of variance >2.5, it is considered as correct
+    if ((sqrt(mean(var1$x)^2 + mean(var1$y)^2) > 2) & 
+        (mean(dist(cbind(var1$x,var1$y))) > 2.5)){
+      print("Correct!")
+    }else{print("Wrong! Please try again.")}
+  })
   
 
 ###Repeat three times for the other three tabs
@@ -53,18 +94,33 @@ shinyServer(function(input, output,session) {
     })
   })
   output$target2 <- renderPlot({
-    isolate(ima <- readPNG("t6.png"))
-    isolate(plot(x=-5:5,ylim=c(-5,5),xlim=c(-5,5),type='p',xlab = ''))
-    
-    isolate(lim <- par())
-    isolate(rasterImage(ima, lim$usr[1], lim$usr[3], lim$usr[2], lim$usr[4]))
-    isolate(grid())
-    lines(var2$x,var2$y, xlim = c(-5,5), ylim = c(-5,5),type = 'p', pch = 20)
+    plotTarget(var2$x,var2$y)
   },height = 400, width = 400)
-  output$hist2 <- renderPlot({
-    curve(dnorm(x, mean = sqrt(mean(var2$x)^2 + mean(var2$y)^2), sd = sqrt((sum((var2$x-mean(var2$x))^2 + (var2$y-mean(var2$y))^2))/length(var2$x))),xlim = c(-5,5),ylab = '')
-    abline(v=0)
+  
+  output$plot2a <- renderPlot({
+    plotA(var2$x,var2$y)
   },height = 400, width = 400)
+  
+  output$plot2b <- renderPlot({
+    plotB(var2$x,var2$y)
+  },height = 400, width = 400)
+  
+  output$bias2 <- renderText({
+    print(sqrt(mean(var2$x)^2 + mean(var2$y)^2))
+  })
+  
+  output$reliability2 <- renderText({
+    print(mean(dist(cbind(var2$x,var2$y))))
+  })
+  
+  output$answer2 <- renderText({
+    #When the measurement of bias > 2 and of variance < 2, it is considered as correct
+    if ((sqrt(mean(var2$x)^2 + mean(var2$y)^2) > 2) & 
+        (mean(dist(cbind(var2$x,var2$y))) < 2)){
+      print("Correct!")
+    }else{print("Wrong! Please try again.")}
+  })
+  
   
   observe({
     if (is.null(input$Click3)){
@@ -77,18 +133,33 @@ shinyServer(function(input, output,session) {
     })
   })
   output$target3 <- renderPlot({
-    isolate(ima <- readPNG("t6.png"))
-    isolate(plot(x=-5:5,ylim=c(-5,5),xlim=c(-5,5),type='p',xlab = ''))
-    
-    isolate(lim <- par())
-    isolate(rasterImage(ima, lim$usr[1], lim$usr[3], lim$usr[2], lim$usr[4]))
-    isolate(grid())
-    lines(var3$x,var3$y, xlim = c(-5,5), ylim = c(-5,5),type = 'p', pch = 20)
+    plotTarget(var3$x,var3$y)
   },height = 400, width = 400)
-  output$hist3 <- renderPlot({
-    curve(dnorm(x, mean = sqrt(mean(var3$x)^2 + mean(var3$y)^2), sd = sqrt((sum((var3$x-mean(var3$x))^2 + (var3$y-mean(var3$y))^2))/length(var3$x))),xlim = c(-5,5),ylab = '')
-    abline(v=0)
+  
+  output$plot3a <- renderPlot({
+    plotA(var3$x,var3$y)
   },height = 400, width = 400)
+  
+  output$plot3b <- renderPlot({
+    plotB(var3$x,var3$y)
+  },height = 400, width = 400)
+  
+  output$bias3 <- renderText({
+    print(sqrt(mean(var3$x)^2 + mean(var3$y)^2))
+  })
+  
+  output$reliability3 <- renderText({
+    print(mean(dist(cbind(var3$x,var3$y))))
+  })
+  
+  output$answer3 <- renderText({
+    #When the measurement of bias < 1 and of variance > 2.5, it is considered as correct
+    if ((sqrt(mean(var3$x)^2 + mean(var3$y)^2) < 1) & 
+        (mean(dist(cbind(var3$x,var3$y))) > 2.5)){
+      print("Correct!")
+    }else{print("Wrong! Please try again.")}
+  })
+  
   
   observe({
     if (is.null(input$Click4)){
@@ -101,18 +172,33 @@ shinyServer(function(input, output,session) {
     })
   })
   output$target4 <- renderPlot({
-    isolate(ima <- readPNG("t6.png"))
-    isolate(plot(x=-5:5,ylim=c(-5,5),xlim=c(-5,5),type='p',xlab = ''))
-    
-    isolate(lim <- par())
-    isolate(rasterImage(ima, lim$usr[1], lim$usr[3], lim$usr[2], lim$usr[4]))
-    isolate(grid())
-    lines(var4$x,var4$y, xlim = c(-5,5), ylim = c(-5,5),type = 'p', pch = 20)
+    plotTarget(var4$x,var4$y)
   },height = 400, width = 400)
-  output$hist4 <- renderPlot({
-    curve(dnorm(x, mean = sqrt(mean(var4$x)^2 + mean(var4$y)^2), sd = sqrt((sum((var4$x-mean(var4$x))^2 + (var4$y-mean(var4$y))^2))/length(var4$x))),xlim = c(-5,5),ylab = '')
-    abline(v=0)
+  
+  output$plot4a <- renderPlot({
+    plotA(var4$x,var4$y)
   },height = 400, width = 400)
+  
+  output$plot4b <- renderPlot({
+    plotB(var4$x,var4$y)
+  },height = 400, width = 400)
+  
+  output$bias4 <- renderText({
+    print(sqrt(mean(var4$x)^2 + mean(var4$y)^2))
+  })
+  
+  output$reliability4 <- renderText({
+    print(mean(dist(cbind(var4$x,var4$y))))
+  })
+  
+  output$answer4 <- renderText({
+    #When the measurement of bias < 1 and of variance < 2, it is considered as correct
+    if ((sqrt(mean(var4$x)^2 + mean(var4$y)^2) < 1) & 
+        (mean(dist(cbind(var4$x,var4$y))) < 2)){
+      print("Correct!")
+    }else{print("Wrong! Please try again.")}
+  })
+  
  
 
     
