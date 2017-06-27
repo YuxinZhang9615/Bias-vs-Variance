@@ -4,7 +4,14 @@ library(shinyBS)
 
 shinyUI(navbarPage("Bias + Reliability",
                    tabPanel("Large Bias + Low Reliability",
-                            wellPanel(h2("Instructions will be written here...")),hr(),
+                            wellPanel(
+                              h2("Reliability is the extent to which an experiment, test, or any measuring procedure
+                                 yields the same result on repeated trials.","\n","Validity refers to the degree to 
+                                 which a study accurately reflects or assesses the specific concept that the researcher
+                                 is attemping to measure. Please put on at least 10 dots. The center of the target 
+                                 represents the population and each dot represents a sample."),
+                              fluidRow(h2("Try to create a model for large bias and low reliability."))
+                            ),hr(),
                             fluidRow(
                               column(4,plotOutput("target1", click = 'Click1')),
                               column(8, 
@@ -49,8 +56,8 @@ shinyUI(navbarPage("Bias + Reliability",
                               br(),
                               hr(),
                               conditionalPanel("input.submit2 != 0",
-                                               h1(textOutput("answer2"))),
-                              wellPanel("Instructions will be written here ...")
+                                               wellPanel(h1(textOutput("answer2")),
+                                                         h2(textOutput("instruction2"))))
                             )
                    ),
                    

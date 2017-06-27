@@ -144,10 +144,26 @@ shinyServer(function(input, output,session) {
   
   output$answer2 <- renderText({
     #When the measurement of bias > 2 and of variance < 2, it is considered as correct
-    if ((sqrt(mean(var2$x)^2 + mean(var2$y)^2) > 2) & 
-        (mean(dist(cbind(var2$x,var2$y))) < 2)){
-      print("Correct!")
-    }else{print("Wrong! Please try again.")}
+    if ((sqrt(mean(var2$x)^2 + mean(var2$y)^2) > 4) & 
+        (mean(dist(cbind(var2$x,var2$y))) < 1.5)){
+      print("Great! Nicely done!")
+    }else if ((sqrt(mean(var2$x)^2 + mean(var2$y)^2) > 3) & (mean(dist(cbind(var2$x,var2$y))) < 2))
+      {print("Good job!")
+      }else if ((sqrt(mean(var2$x)^2 + mean(var2$y)^2) > 2) & (mean(dist(cbind(var2$x,var2$y))) < 2))
+      {print("Not bad! Try again.")
+        }else{print("You can do better. Try again.")}
+  })
+  output$instruction2 <- renderText({
+    if ((sqrt(mean(var2$x)^2 + mean(var2$y)^2) > 4) & (mean(dist(cbind(var2$x,var2$y))) < 1.5)){
+      print("The center of dots is far from the center of the target, which gives a large bias.
+             Dots are close to each other, which shows a high reliability.")
+    }else if ((sqrt(mean(var2$x)^2 + mean(var2$y)^2) > 3) & (mean(dist(cbind(var2$x,var2$y))) < 2)){
+      print("The center of dots can be further from the center of the target to show a large bias.
+             Dots can be closer to each other to show a high reliability.")
+    }else{
+      print("The center of dots should be further from the center of the target to show a large bias.
+             Dots should be closer to each other to show a high reliability.")
+    }
   })
   
   
