@@ -3,15 +3,53 @@ library(png)
 library(shinyBS)
 
 shinyServer(function(input, output,session) {
-  var1 <- reactiveValues(x = NULL, y = NULL)
-  var2 <- reactiveValues(x = NULL, y = NULL)
-  var3 <- reactiveValues(x = NULL, y = NULL)
-  var4 <- reactiveValues(x = NULL, y = NULL)
   
-
- 
-
+  #Text on the instruction page
+  output$concept1 <- renderUI(
+    print("Concepts: Bias and Reliability")
+  )
+  output$concept2 <- renderText(
+    print("Reliability is the extent to which an experiment, test, or any measuring procedure
+   yields the same result on repeated trials.")
+  )
+  output$concept3 <- renderUI(
+    print("Validity refers to the degree to 
+          which a study accurately reflects or assesses the specific concept that the researcher
+          is attemping to measure.")
+  )
+  output$instruction1 <- renderUI(
+    print("Instruction")
+  )
+  output$instruction2 <- renderUI(
+    print("Step1: Click the plot to put down at least 10 points by mouse.")   
+  )
+  output$instruction3 <- renderUI(
+    print("Step2: Click 'try' button to view the result.")
+  )
+  output$instruction4 <- renderUI(
+    print('Step3: Click "try" to restart clicking points if you got it wrong.')
+  )
   
+  
+  var <- reactiveValues(x = NULL, y = NULL, bias = NULL, reliability = NULL)
+  
+  index <- reactiveValues(index = 4)
+  observeEvent(input$new,{
+    index$index <- sample(1:4,1)
+  })
+  
+  output$question <- renderUI({
+    if (index$index == 1){
+      h3("Can you create a model for large bias and low reliability?  Please put on at least 10 dots.")
+    }else if (index$index == 2){
+      h3("Can you create a model for large bias and high reliability?  Please put on at least 10 dots.")
+    }else if (index$index == 3){
+      h3("Can you create a model for no bias and low reliability?  Please put on at least 10 dots.")
+    }else if (index$index == 4){
+      h3("Can you create a model for no bias and high reliability? (Please put down at least 10 dots.)")
+    }
+  })
+
 #Create function for ploting the target  
   plotTarget = function(x,y){
     #Get image
@@ -29,7 +67,7 @@ shinyServer(function(input, output,session) {
   
 #Create function for ploting the bias plot  
   plotA = function(x,y){
-    plot(x = -3:3,xlim = c(-6,6), type = "n", xlab = "", ylab = "", main = "Bias")
+    plot(x = -3:3,xlim = c(-6,6), type = "n", xlab = "", ylab = "", main = "Bias",yaxt = 'n')
     box(col = "red")
     abline(v=0,col = "red")
     abline(v = sqrt(mean(x)^2 + mean(y)^2))
@@ -46,214 +84,186 @@ shinyServer(function(input, output,session) {
 ##Use above three functions to code the output for tab1     
   observe({
     # Initially will be empty
-    if (is.null(input$Click1)){
+    if (is.null(input$Click)){
       return()
     }
     #Save the coordinates of clicked points as two vectors
     isolate({
-      var1$x <- c(var1$x, input$Click1$x)
-      var1$y <- c(var1$y, input$Click1$y)
+      var$x <- c(var$x, input$Click$x)
+      var$y <- c(var$y, input$Click$y)
     })
   })
   
-  #Reset the button to FALSE so that all the conditionalPanel will disappear
-  observeEvent(input$submit1,{{
-    updateButton(session,"submit1",label = "Try",style = "danger")
-  }})
-  #Reset(clear) the clicked points
   observe({
-    if (input$submit1 == FALSE){
-      var1$x <- NULL
-      var1$y <- NULL
+    if (length(var$x) >= 10){
+      updateButton(session,"submit",label = "Try",style = "danger", size = "large", disabled = FALSE)
     }
   })
   
-  output$target1 <- renderPlot({
-    plotTarget(var1$x,var1$y)
-  },height = 380, width = 380)
-  
-  output$plot1a <- renderPlot({
-    plotA(var1$x,var1$y)
-  },height = 380, width = 380)
-  
-  output$plot1b <- renderPlot({
-    plotB(var1$x,var1$y)
-  },height = 380, width = 380)
-  
-  #Distance between the center of target(population) and the center of the cloud of dots(ave. of samples)
-  output$bias1 <- renderText({
-    print(sqrt(mean(var1$x)^2 + mean(var1$y)^2))
+  #Reset the button to FALSE so that all the conditionalPanel will disappear
+  observeEvent(input$submit,{{
+    updateButton(session,"submit",label = "Try",style = "danger",size = "large")
+  }})
+  #Reset(clear) the clicked points
+  observe({
+    if (input$submit == FALSE){
+      var$x <- NULL
+      var$y <- NULL
+    }
   })
   
-  #Average distance between each dots
-  output$reliability1 <- renderText({
-    print(mean(dist(cbind(var1$x,var1$y))))
+  observe({
+    if (length(var$x) == 1){
+      updateButton(session,"submit",disabled = TRUE)
+    }
   })
+
+
+  observeEvent(input$new,{
+    updateButton(session, "submit", value = FALSE, disabled = TRUE)
+  })
+
   
-  output$answer1 <- renderText({
-    #When the measurement of bias > 2 and of variance >2.5, it is considered as correct
-    if ((sqrt(mean(var1$x)^2 + mean(var1$y)^2) > 2) & 
-        (mean(dist(cbind(var1$x,var1$y))) > 2.5)){
-      print("Correct!")
-    }else{print("Wrong! Please try again.")}
+  output$target <- renderPlot({
+    plotTarget(var$x,var$y)
+  },height = 320, width = 320)
+  
+  output$plota <- renderPlot({
+    plotA(var$x,var$y)
+  },height = 320, width = 320)
+  
+  output$plotb <- renderPlot({
+    plotB(var$x,var$y)
+  },height = 320, width = 320)
+  
+
+  observe({
+    if (input$submit == TRUE){
+      #Distance between the center of target(population) and the center of the cloud of dots(ave. of samples)
+      var$bias <- sqrt(mean(var$x)^2 + mean(var$y)^2)
+      #Average distance between each dots
+      var$reliability <- mean(dist(cbind(var$x,var$y)))
+    }
   })
   
 
-###Repeat three times for the other three tabs
-  observe({
-    if (is.null(input$Click2)){
-      return()
-    }
-    
-    isolate({
-      var2$x <- c(var2$x, input$Click2$x)
-      var2$y <- c(var2$y, input$Click2$y)
-    })
+  output$bias <- renderText({
+    print(round(var$bias, digits = 2))
   })
   
-  #Reset the button to FALSE so that all the conditionalPanel will disappear
-  observeEvent(input$submit2,{{
-    updateButton(session,"submit2",label = "Try",style = "danger")
-  }})
-  #Reset(clear) the clicked points
-  observe({
-    if (input$submit2 == FALSE){
-      var2$x <- NULL
-      var2$y <- NULL
-    }
+  output$reliability <- renderText({
+    print(round(var$reliability, digits = 2))
   })
-  output$target2 <- renderPlot({
-    plotTarget(var2$x,var2$y)
-  },height = 380, width = 380)
-  
-  output$plot2a <- renderPlot({
-    plotA(var2$x,var2$y)
-  },height = 380, width = 380)
-  
-  output$plot2b <- renderPlot({
-    plotB(var2$x,var2$y)
-  },height = 380, width = 380)
-  
-  output$bias2 <- renderText({
-    print(sqrt(mean(var2$x)^2 + mean(var2$y)^2))
-  })
-  
-  output$reliability2 <- renderText({
-    print(mean(dist(cbind(var2$x,var2$y))))
-  })
-  
-  output$answer2 <- renderText({
-    #When the measurement of bias > 2 and of variance < 2, it is considered as correct
-    if ((sqrt(mean(var2$x)^2 + mean(var2$y)^2) > 2) & 
-        (mean(dist(cbind(var2$x,var2$y))) < 2)){
-      print("Correct!")
-    }else{print("Wrong! Please try again.")}
-  })
-  
-  
-  observe({
-    if (is.null(input$Click3)){
-      return()
-    }
-    
-    isolate({
-      var3$x <- c(var3$x, input$Click3$x)
-      var3$y <- c(var3$y, input$Click3$y)
-    })
-  })
-  #Reset the button to FALSE so that all the conditionalPanel will disappear
-  observeEvent(input$submit3,{{
-    updateButton(session,"submit3",label = "Try",style = "danger")
-  }})
-  #Reset(clear) the clicked points
-  observe({
-    if (input$submit1 == FALSE){
-      var3$x <- NULL
-      var3$y <- NULL
-    }
-  })
-  output$target3 <- renderPlot({
-    plotTarget(var3$x,var3$y)
-  },height = 380, width = 380)
-  
-  output$plot3a <- renderPlot({
-    plotA(var3$x,var3$y)
-  },height = 380, width = 380)
-  
-  output$plot3b <- renderPlot({
-    plotB(var3$x,var3$y)
-  },height = 380, width = 380)
-  
-  output$bias3 <- renderText({
-    print(sqrt(mean(var3$x)^2 + mean(var3$y)^2))
-  })
-  
-  output$reliability3 <- renderText({
-    print(mean(dist(cbind(var3$x,var3$y))))
-  })
-  
-  output$answer3 <- renderText({
-    #When the measurement of bias < 1 and of variance > 2.5, it is considered as correct
-    if ((sqrt(mean(var3$x)^2 + mean(var3$y)^2) < 1) & 
-        (mean(dist(cbind(var3$x,var3$y))) > 2.5)){
-      print("Correct!")
-    }else{print("Wrong! Please try again.")}
-  })
-  
-  
-  observe({
-    if (is.null(input$Click4)){
-      return()
-    }
-    
-    isolate({
-      var4$x <- c(var4$x, input$Click4$x)
-      var4$y <- c(var4$y, input$Click4$y)
-    })
-  })
-  #Reset the button to FALSE so that all the conditionalPanel will disappear
-  observeEvent(input$submit4,{{
-    updateButton(session,"submit4",label = "Try",style = "danger")
-  }})
-  #Reset(clear) the clicked points
-  observe({
-    if (input$submit4 == FALSE){
-      var4$x <- NULL
-      var4$y <- NULL
-    }
-  })
-  output$target4 <- renderPlot({
-    plotTarget(var4$x,var4$y)
-  },height = 380, width = 380)
-  
-  output$plot4a <- renderPlot({
-    plotA(var4$x,var4$y)
-  },height = 380, width = 380)
-  
-  output$plot4b <- renderPlot({
-    plotB(var4$x,var4$y)
-  },height = 380, width = 380)
-  
-  output$bias4 <- renderText({
-    print(sqrt(mean(var4$x)^2 + mean(var4$y)^2))
-  })
-  
-  output$reliability4 <- renderText({
-    print(mean(dist(cbind(var4$x,var4$y))))
-  })
-  
-  output$answer4 <- renderText({
-    #When the measurement of bias < 1 and of variance < 2, it is considered as correct
-    if ((sqrt(mean(var4$x)^2 + mean(var4$y)^2) < 1) & 
-        (mean(dist(cbind(var4$x,var4$y))) < 2)){
-      print("Correct!")
-    }else{print("Wrong! Please try again.")}
-  })
-  
- 
 
+  output$answer <- renderUI({
+    if (index$index == 1){
+      if ((var$bias > 4) & (var$reliability > 3)){
+        print("Great! Nicely done!")
+      }else if ((var$bias > 3) & (var$reliability > 2.5)){
+        print("Good job!")
+      }else if ((var$bias > 2.5) & (var$reliability > 2)){
+        print("Not bad! Try again.")
+      }else{
+        print("You can do better. Try again.")
+      }
+    }else if (index$index == 2){
+      if ((var$bias > 4) & (var$reliability < 1.5)){
+        print("Great! Nicely done!")
+      }else if ((var$bias > 3) & (var$reliability < 2)){
+        print("Good job!")
+      }else if ((var$bias > 2) & (var$reliability < 2)){
+        print("Not bad! Try again.")
+      }else{
+        print("You can do better. Try again.")
+      }
+    }else if (index$index == 3){
+      if ((var$bias < 0.25) & (var$reliability > 3)){
+        print("Great! Nicely done!")
+      }else if ((var$bias < 0.3) & (var$reliability > 2.5)){
+        print("Good job!")
+      }else if ((var$bias < 0.5) & (var$reliability > 2)){
+        print("Not bad! Try again.")
+      }else{
+        print("You can do better. Try again.")
+      }
+    }else if (index$index == 4){
+      if ((var$bias < 0.25) & (var$reliability < 1.5)){
+        print("Great! Nicely done!")
+      }else if ((var$bias < 0.3) & (var$reliability < 2)){
+        print("Good job!")
+      }else if ((var$bias < 0.5) & (var$reliability < 2)){
+        print("Not bad! Try again.")
+      }else{
+        print("You can do better. Try again.")
+      }
+    }
+  })
+  
+  observe({
+    if (input$submit == TRUE){
+      if ((index$index == 1) & (var$bias > 3) & (var$reliability > 2.5)){
+        updateButton(session, "new", disabled = FALSE)
+      }else if ((index$index == 2) & (var$bias > 3) & (var$reliability < 2)){
+        updateButton(session, "new", disabled = FALSE)
+      }else if ((index$index == 3) & (var$bias < 0.3) & (var$reliability > 2.5)){
+        updateButton(session, "new", disabled = FALSE)
+      }else if ((index$index == 4) & (var$bias < 0.3) & (var$reliability < 2)){
+        updateButton(session, "new", disabled = FALSE)
+      }else{
+        updateButton(session, "new", disabled = TRUE)
+      }
+    }else{
+      updateButton(session, "new", disabled = TRUE)
+    }
+  })
+
+  output$feedback1 <- renderUI({
+    paste("Average bias = ",round(var$bias,digits = 2),"(smaller values indicate less bias)")
+  }) 
+  output$feedback2 <- renderUI({
+    paste("Average reliability = ", round(var$reliability,digits = 2), "(smaller values indicate better reliability)")
+  })
+  output$feedback3 <- renderUI({
+    if ((var$x > 0) & (var$y > 0) & (var$bias > 3) & (var$reliability > 2.5)){
+      print("The dots you put down are centered on the first quadrant, with a relatively large bias and low reliability.")
+    }else if ((var$x > 0) & (var$y > 0) & (var$bias > 3) & (var$reliability <= 2.5)){
+      print("The dots you put down are centered on the first quadrant, with a relatively large bias and high reliability.")
+    }else if ((var$x > 0) & (var$y > 0) & (var$bias <= 3) & (var$reliability > 2.5)){
+      print("The dots you put down are centered on the first quadrant, with a relatively small bias and low reliability.")
+    }else if ((var$x > 0) & (var$y > 0) & (var$bias <= 3) & (var$reliability <= 2.5)){
+      print("The dots you put down are centered on the first quadrant, with a relatively small bias and high reliability.")
     
-   
+    }else if ((var$x < 0) & (var$y > 0) & (var$bias > 3) & (var$reliability > 2.5)){
+      print("The dots you put down are centered on the second quadrant, with a relatively large bias and low reliability.")
+    }else if ((var$x < 0) & (var$y > 0) & (var$bias > 3) & (var$reliability <= 2.5)){
+      print("The dots you put down are centered on the second quadrant, with a relatively large bias and high reliability.")
+    }else if ((var$x < 0) & (var$y > 0) & (var$bias <= 3) & (var$reliability > 2.5)){
+      print("The dots you put down are centered on the second quadrant, with a relatively small bias and low reliability.")
+    }else if ((var$x < 0) & (var$y > 0) & (var$bias <= 3) & (var$reliability <= 2.5)){
+      print("The dots you put down are centered on the second quadrant, with a relatively small bias and high reliability.")
+    
+    }else if ((var$x < 0) & (var$y < 0) & (var$bias > 3) & (var$reliability > 2.5)){
+      print("The dots you put down are centered on the third quadrant, with a relatively large bias and low reliability.")
+    }else if ((var$x < 0) & (var$y < 0) & (var$bias > 3) & (var$reliability <= 2.5)){
+      print("The dots you put down are centered on the third quadrant, with a relatively large bias and high reliability.")
+    }else if ((var$x < 0) & (var$y < 0) & (var$bias <= 3) & (var$reliability > 2.5)){
+      print("The dots you put down are centered on the third quadrant, with a relatively small bias and low reliability.")
+    }else if ((var$x < 0) & (var$y < 0) & (var$bias <= 3) & (var$reliability <= 2.5)){
+      print("The dots you put down are centered on the third quadrant, with a relatively small bias and high reliability.")
+    
+    }else if ((var$x > 0) & (var$y > 0) & (var$bias > 3) & (var$reliability > 2.5)){
+      print("The dots you put down are centered on the forth quadrant, with a relatively large bias and low reliability.")
+    }else if ((var$x > 0) & (var$y > 0) & (var$bias > 3) & (var$reliability <= 2.5)){
+      print("The dots you put down are centered on the forth quadrant, with a relatively large bias and high reliability.")
+    }else if ((var$x > 0) & (var$y > 0) & (var$bias <= 3) & (var$reliability > 2.5)){
+      print("The dots you put down are centered on the forth quadrant, with a relatively small bias and low reliability.")
+    }else if ((var$x > 0) & (var$y > 0) & (var$bias <= 3) & (var$reliability <= 2.5)){
+      print("The dots you put down are centered on the forth quadrant, with a relatively small bias and high reliability.")
+    }
+    
+  })
+  
+  
 })
 
 
