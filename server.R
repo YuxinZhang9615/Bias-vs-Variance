@@ -96,13 +96,13 @@ shinyServer(function(input, output,session) {
   
   observe({
     if (length(var$x) >= 10){
-      updateButton(session,"submit",label = "Try",style = "danger", size = "large", disabled = FALSE)
+      updateButton(session,"submit",label = "Submit",style = "danger", size = "large", disabled = FALSE)
     }
   })
   
   #Reset the button to FALSE so that all the conditionalPanel will disappear
   observeEvent(input$submit,{{
-    updateButton(session,"submit",label = "Try",style = "danger",size = "large")
+    updateButton(session,"submit",label = "Try again",style = "danger",size = "large")
   }})
   #Reset(clear) the clicked points
   observe({
@@ -114,13 +114,13 @@ shinyServer(function(input, output,session) {
   
   observe({
     if (length(var$x) == 1){
-      updateButton(session,"submit",disabled = TRUE)
+      updateButton(session,"submit", label = "Submit", disabled = TRUE)
     }
   })
 
 
   observeEvent(input$new,{
-    updateButton(session, "submit", value = FALSE, disabled = TRUE)
+    updateButton(session, "submit", label = "Submit",value = FALSE, disabled = TRUE)
   })
 
   

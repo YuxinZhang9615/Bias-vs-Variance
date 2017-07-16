@@ -69,7 +69,7 @@ ui <- dashboardPage(skin = "black",
                          ))),
               fluidRow(
                 column(4, offset = 4, 
-                       bsButton("submit",label = "Try",type = "toggle", size = "large", value = FALSE, disabled = TRUE),
+                       bsButton("submit",label = "Submit",type = "toggle", size = "large", value = FALSE, disabled = TRUE),
                        bsPopover("submit","","Click here to submit your answer or start again.",placement = "top"),
                        bsButton("new",label = "Next>>", style = "danger", size = "large", disabled = TRUE)
                        ),
