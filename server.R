@@ -12,13 +12,13 @@ shinyServer(function(input, output,session) {
   
   output$question <- renderUI({
     if (index$index == 1){
-      h3("Can you create a model for large bias and low reliability?  Please put on at least 10 dots.")
+      h4("Can you create a model for large bias and low reliability?  Please put on at least 10 dots.")
     }else if (index$index == 2){
-      h3("Can you create a model for large bias and high reliability?  Please put on at least 10 dots.")
+      h4("Can you create a model for large bias and high reliability?  Please put on at least 10 dots.")
     }else if (index$index == 3){
-      h3("Can you create a model for no bias and low reliability?  Please put on at least 10 dots.")
+      h4("Can you create a model for no bias and low reliability?  Please put on at least 10 dots.")
     }else if (index$index == 4){
-      h3("Can you create a model for no bias and high reliability?  Please put on at least 10 dots.")
+      h3("Can you create a model for no bias and high reliability? (Please put down at least 10 dots.)")
     }
   })
 

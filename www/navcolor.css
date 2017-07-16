@@ -24,3 +24,8 @@ aside.main-sidebar {
   font-size: 20px;
 
 }
+.well {
+  height: 80px;
+  text-align: center;
+  padding-top:5px;
+}

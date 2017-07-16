@@ -25,8 +25,9 @@ ui <- dashboardPage(skin = "black",
               ),
       tabItem(tabName = "game",
               wellPanel(
-                uiOutput("question")
-              ),hr(),
+                fluidRow(uiOutput("question"))
+                #fluidRow(h4("Please put down at least 10 points."))
+              ,height = 80),hr(),
               fluidRow(
                 column(4,plotOutput("target", click = 'Click')),
                 column(8, 
