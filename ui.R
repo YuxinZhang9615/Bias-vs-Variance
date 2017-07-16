@@ -4,8 +4,10 @@ library(png)
 library(shinyBS)
 
 ui <- dashboardPage(skin = "black",
-  dashboardHeader(title = "Bias & Reliability"),
+  dashboardHeader(title = "Bias & Reliability",
+                  titleWidth = 200),
   dashboardSidebar(
+    width = 200,
     sidebarMenu(
       menuItem("Instruction",tabName = "instruction", icon = icon("dashboard")),
       menuItem("Game",tabName = "game", icon = icon("th"))
@@ -17,25 +19,49 @@ ui <- dashboardPage(skin = "black",
     ),
     tabItems(
       tabItem(tabName = "instruction",
-              h2("Reliability is the extent to which an experiment, test, or any measuring procedure
-                                 yields the same result on repeated trials.","\n","Validity refers to the degree to 
-                 which a study accurately reflects or assesses the specific concept that the researcher
-                 is attemping to measure. Please put on at least 10 dots. The center of the target 
-                 represents the population and each dot represents a sample.")
+              fluidRow(
+                column(11,offset = 1, uiOutput("concept1"))
+                ),br(),
+              fluidRow(
+                column(1,img(src = "right.png", width = 30)),
+                column(11,uiOutput("concept2"))
+                ),
+              fluidRow(
+                column(1,img(src = "right.png", width = 30)),
+                column(11,uiOutput("concept3"))
+              ),
+              hr(),
+              fluidRow(
+                column(11,offset = 1, uiOutput("instruction1"))
+              ),br(),
+              fluidRow(
+                column(1,img(src = "right.png", width = 30)),
+                column(11,uiOutput("instruction2"))
+              ),
+              fluidRow(
+                column(1,img(src = "right.png", width = 30)),
+                column(11,uiOutput("instruction3"))
+              ),
+              fluidRow(
+                column(1,img(src = "right.png", width = 30)),
+                column(11,uiOutput("instruction4"))
+              )
+              
               ),
       tabItem(tabName = "game",
               wellPanel(
                 fluidRow(uiOutput("question"))
-                #fluidRow(h4("Please put down at least 10 points."))
-              ,height = 80),hr(),
+                ),hr(),
               fluidRow(
-                column(4,plotOutput("target", click = 'Click')),
+                column(4,plotOutput("target", click = 'Click'), style = "height: 320px;"),
                 column(8, 
                        conditionalPanel(
                          condition = 'input.submit != 0',
                          fluidRow(
-                           column(6,plotOutput("plota")),
-                           column(6,plotOutput("plotb")))
+                           column(6,plotOutput("plota"), style = "height: 320px;",
+                                  bsPopover("plota", "Bias", "Smaller values indicate less bias.",placement = "top")),
+                           column(6,plotOutput("plotb"), style = "height: 320px;",
+                                  bsPopover("plotb", "Reliability", "Smaller values indicate better reliability.",placement = "top")))
                          # fluidRow(
                          #   column(4,offset = 2,h4(textOutput("bias"))),
                          #   column(4,offset = 2,h4(textOutput("reliability")))
@@ -44,14 +70,21 @@ ui <- dashboardPage(skin = "black",
               fluidRow(
                 column(4, offset = 4, 
                        bsButton("submit",label = "Try",type = "toggle", size = "large", value = FALSE, disabled = TRUE),
-                       bsButton("new",label = "Next>>", style = "danger", size = "large", disabled = TRUE))
+                       bsPopover("submit","","Click here to submit your answer or start again.",placement = "top"),
+                       bsButton("new",label = "Next>>", style = "danger", size = "large", disabled = TRUE)
+                       ),
+                column(1, offset = 3,
+                       conditionalPanel("input.submit != 0", img(src = "arrow.gif", width = 60)))
               ),
               fluidRow(
                 hr(),
                 conditionalPanel("input.submit != 0",
-                                 h1(textOutput("answer"))),
-                wellPanel("Instructions will be written here ...")
-              )
+                                 h1(uiOutput("answer")),
+                                 wellPanel(uiOutput("feedback1"),
+                                           uiOutput("feedback2"),
+                                           uiOutput("feedback3"), class = "wellfeedback")
+                ))
+               
               )
     )
   )

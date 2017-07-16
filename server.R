@@ -3,6 +3,34 @@ library(png)
 library(shinyBS)
 
 shinyServer(function(input, output,session) {
+  
+  #Text on the instruction page
+  output$concept1 <- renderUI(
+    print("Concepts: Bias and Reliability")
+  )
+  output$concept2 <- renderText(
+    print("Reliability is the extent to which an experiment, test, or any measuring procedure
+   yields the same result on repeated trials.")
+  )
+  output$concept3 <- renderUI(
+    print("Validity refers to the degree to 
+          which a study accurately reflects or assesses the specific concept that the researcher
+          is attemping to measure.")
+  )
+  output$instruction1 <- renderUI(
+    print("Instruction")
+  )
+  output$instruction2 <- renderUI(
+    print("Step1: Click the plot to put down at least 10 points by mouse.")   
+  )
+  output$instruction3 <- renderUI(
+    print("Step2: Click 'try' button to view the result.")
+  )
+  output$instruction4 <- renderUI(
+    print('Step3: Click "try" to restart clicking points if you got it wrong.')
+  )
+  
+  
   var <- reactiveValues(x = NULL, y = NULL, bias = NULL, reliability = NULL)
   
   index <- reactiveValues(index = 4)
@@ -12,11 +40,11 @@ shinyServer(function(input, output,session) {
   
   output$question <- renderUI({
     if (index$index == 1){
-      h4("Can you create a model for large bias and low reliability?  Please put on at least 10 dots.")
+      h3("Can you create a model for large bias and low reliability?  Please put on at least 10 dots.")
     }else if (index$index == 2){
-      h4("Can you create a model for large bias and high reliability?  Please put on at least 10 dots.")
+      h3("Can you create a model for large bias and high reliability?  Please put on at least 10 dots.")
     }else if (index$index == 3){
-      h4("Can you create a model for no bias and low reliability?  Please put on at least 10 dots.")
+      h3("Can you create a model for no bias and low reliability?  Please put on at least 10 dots.")
     }else if (index$index == 4){
       h3("Can you create a model for no bias and high reliability? (Please put down at least 10 dots.)")
     }
@@ -83,42 +111,30 @@ shinyServer(function(input, output,session) {
       var$y <- NULL
     }
   })
-  # observeEvent(input$submit1,{
-  #   updateButton(session, "new", disabled = TRUE)
-  # })
   
-  # observeEvent(input$submit1,{
-  #   if ((index$index == 1) & (var$bias > 3) & (var$reliability > 2.5)){
-  #     updateButton(session, "new", disabled = FALSE)
-  #   }else if ((index$index == 2) & (var$bias > 3) & (var$reliability < 2)){
-  #     updateButton(session, "new", disabled = FALSE)
-  #   }else if ((index$index == 3) & (var$bias < 0.3) & (var$reliability > 2.5)){
-  #     updateButton(session, "new", disabled = FALSE)
-  #   }else if ((index$index == 4) & (var$bias < 0.3) & (var$reliability < 2)){
-  #     updateButton(session, "new", disabled = FALSE)
-  #   }else{
-  #     updateButton(session, "new", disabled = TRUE)
-  #   }
-  # })
-  
+  observe({
+    if (length(var$x) == 1){
+      updateButton(session,"submit",disabled = TRUE)
+    }
+  })
 
 
   observeEvent(input$new,{
-    updateButton(session, "submit", value = FALSE)
+    updateButton(session, "submit", value = FALSE, disabled = TRUE)
   })
 
   
   output$target <- renderPlot({
     plotTarget(var$x,var$y)
-  },height = 340, width = 340)
+  },height = 320, width = 320)
   
   output$plota <- renderPlot({
     plotA(var$x,var$y)
-  },height = 340, width = 340)
+  },height = 320, width = 320)
   
   output$plotb <- renderPlot({
     plotB(var$x,var$y)
-  },height = 340, width = 340)
+  },height = 320, width = 320)
   
 
   observe({
@@ -139,7 +155,7 @@ shinyServer(function(input, output,session) {
     print(round(var$reliability, digits = 2))
   })
 
-  output$answer <- renderText({
+  output$answer <- renderUI({
     if (index$index == 1){
       if ((var$bias > 4) & (var$reliability > 3)){
         print("Great! Nicely done!")
@@ -201,7 +217,53 @@ shinyServer(function(input, output,session) {
     }
   })
 
-   
+  output$feedback1 <- renderUI({
+    paste("Average bias = ",round(var$bias,digits = 2),"(smaller values indicate less bias)")
+  }) 
+  output$feedback2 <- renderUI({
+    paste("Average reliability = ", round(var$reliability,digits = 2), "(smaller values indicate better reliability)")
+  })
+  output$feedback3 <- renderUI({
+    if ((var$x > 0) & (var$y > 0) & (var$bias > 3) & (var$reliability > 2.5)){
+      print("The dots you put down are centered on the first quadrant, with a relatively large bias and low reliability.")
+    }else if ((var$x > 0) & (var$y > 0) & (var$bias > 3) & (var$reliability <= 2.5)){
+      print("The dots you put down are centered on the first quadrant, with a relatively large bias and high reliability.")
+    }else if ((var$x > 0) & (var$y > 0) & (var$bias <= 3) & (var$reliability > 2.5)){
+      print("The dots you put down are centered on the first quadrant, with a relatively small bias and low reliability.")
+    }else if ((var$x > 0) & (var$y > 0) & (var$bias <= 3) & (var$reliability <= 2.5)){
+      print("The dots you put down are centered on the first quadrant, with a relatively small bias and high reliability.")
+    
+    }else if ((var$x < 0) & (var$y > 0) & (var$bias > 3) & (var$reliability > 2.5)){
+      print("The dots you put down are centered on the second quadrant, with a relatively large bias and low reliability.")
+    }else if ((var$x < 0) & (var$y > 0) & (var$bias > 3) & (var$reliability <= 2.5)){
+      print("The dots you put down are centered on the second quadrant, with a relatively large bias and high reliability.")
+    }else if ((var$x < 0) & (var$y > 0) & (var$bias <= 3) & (var$reliability > 2.5)){
+      print("The dots you put down are centered on the second quadrant, with a relatively small bias and low reliability.")
+    }else if ((var$x < 0) & (var$y > 0) & (var$bias <= 3) & (var$reliability <= 2.5)){
+      print("The dots you put down are centered on the second quadrant, with a relatively small bias and high reliability.")
+    
+    }else if ((var$x < 0) & (var$y < 0) & (var$bias > 3) & (var$reliability > 2.5)){
+      print("The dots you put down are centered on the third quadrant, with a relatively large bias and low reliability.")
+    }else if ((var$x < 0) & (var$y < 0) & (var$bias > 3) & (var$reliability <= 2.5)){
+      print("The dots you put down are centered on the third quadrant, with a relatively large bias and high reliability.")
+    }else if ((var$x < 0) & (var$y < 0) & (var$bias <= 3) & (var$reliability > 2.5)){
+      print("The dots you put down are centered on the third quadrant, with a relatively small bias and low reliability.")
+    }else if ((var$x < 0) & (var$y < 0) & (var$bias <= 3) & (var$reliability <= 2.5)){
+      print("The dots you put down are centered on the third quadrant, with a relatively small bias and high reliability.")
+    
+    }else if ((var$x > 0) & (var$y > 0) & (var$bias > 3) & (var$reliability > 2.5)){
+      print("The dots you put down are centered on the forth quadrant, with a relatively large bias and low reliability.")
+    }else if ((var$x > 0) & (var$y > 0) & (var$bias > 3) & (var$reliability <= 2.5)){
+      print("The dots you put down are centered on the forth quadrant, with a relatively large bias and high reliability.")
+    }else if ((var$x > 0) & (var$y > 0) & (var$bias <= 3) & (var$reliability > 2.5)){
+      print("The dots you put down are centered on the forth quadrant, with a relatively small bias and low reliability.")
+    }else if ((var$x > 0) & (var$y > 0) & (var$bias <= 3) & (var$reliability <= 2.5)){
+      print("The dots you put down are centered on the forth quadrant, with a relatively small bias and high reliability.")
+    }
+    
+  })
+  
+  
 })
 
 
