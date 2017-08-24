@@ -5,13 +5,19 @@ library(shinyBS)
 shinyServer(function(input, output,session) {
   
   #Text on the instruction page
-  output$concept1 <- renderUI(
-    print("Concepts: Bias and Reliability")
+  output$about1 <- renderUI(
+    print("About")
   )
-  output$concept2 <- renderUI(
+  output$about2 <- renderUI(
+    print("Understand concepts bias and reliability in sampling.")
+  )
+  output$background1 <- renderUI(
+    print("Background: Bias and Reliability")
+  )
+  output$background2 <- renderUI(
     print("The bias of a measurement describes to what degree it is systematically off target from the true value.")
   )
-  output$concept3 <- renderUI(
+  output$background3 <- renderUI(
     print("The reliability of a measurement describes how consistent the measurement is when you repeat it 
           (alternatively, an unreliable measurement is one that shows a lot of variability from value to value 
           when the measurement is repeated independently). ")
@@ -29,6 +35,12 @@ shinyServer(function(input, output,session) {
     print('Note: There are only four different questions.')
   )
   
+  output$ack1 <- renderUI(
+    print("Acknowledgement and Credit")
+  )
+  output$ack2 <- renderUI(
+    print("This app was developed and coded by Yuxin Zhang.")
+  )
   
   var <- reactiveValues(x = NULL, y = NULL, bias = NULL, reliability = NULL)
   
@@ -225,13 +237,13 @@ shinyServer(function(input, output,session) {
   output$feedback3 <- renderUI({
     
     if ((mean(var$x) > 0 ) & (mean(var$y) > 0)){
-      quad = "first"
+      quad = "upper right"
     }else if ((mean(var$x) < 0) & (mean(var$y) > 0 )){
-      quad = "second"
+      quad = "upper left"
     }else if ((mean(var$x) < 0) & (mean(var$y) < 0)){
-      quad = "third"
+      quad = "bottom left"
     }else if ((mean(var$x) > 0) & (mean(var$y) < 0)){
-      quad = "forth"
+      quad = "bottom right"
     }
     
     if (var$bias > 3){
@@ -246,7 +258,7 @@ shinyServer(function(input, output,session) {
       reliaFeedback = "high"
     }
     
-    paste("The dots you put down are centered on the",quad,"quadrant, with a relatively",biasFeedback,
+    paste("The dots you put down are centered at the",quad,"quadrant, with a relatively",biasFeedback,
           "bias and",reliaFeedback,"reliability.")
     
 

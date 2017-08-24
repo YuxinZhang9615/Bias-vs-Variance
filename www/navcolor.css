@@ -35,15 +35,23 @@ aside.main-sidebar {
   padding-top:5px; 
 }
 
-#concept1 {
+#about1 {
   font-size: 20px;
   font-weight: 600;
 }
-#concept2 {
+#about2 {
   font-size: 20px;
   font-weight: 550;
 }
-#concept3 {
+#background1 {
+  font-size: 20px;
+  font-weight: 600;
+}
+#background2 {
+  font-size: 20px;
+  font-weight: 550;
+}
+#background3 {
   font-size: 20px;
   font-weight: 550;
 }
@@ -60,6 +68,14 @@ aside.main-sidebar {
   font-weight: 550;
 }
 #instruction4 {
+  font-size: 20px;
+  font-weight: 550;
+}
+#ack1 {
+  font-size: 20px;
+  font-weight: 600;
+}
+#ack2 {
   font-size: 20px;
   font-weight: 550;
 }
@@ -84,4 +100,24 @@ aside.main-sidebar {
   font-weight: normal;
   font-size: 20px;
   
+}
+.arrow {
+  background-color: transparent;
+  border: none;
+  width : 250px;
+  color: red;
+  font-weight: bold;
+  font-size: 13px;
+  line-height: 7px;
+  text-align: center;
+}
+
+.popover-title {
+    color: white;
+    font-size: 15px;
+    background-color:#1C2C5B;
+}
+.popover-content {
+    color: red;
+    font-size: 10px;
 }

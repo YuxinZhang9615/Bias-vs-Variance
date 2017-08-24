@@ -20,20 +20,27 @@ ui <- dashboardPage(skin = "black",
     tabItems(
       tabItem(tabName = "instruction",
               fluidRow(
-                column(11,offset = 1, uiOutput("concept1"))
-                ),br(),
-              fluidRow(
-                column(1,img(src = "right.png", width = 30)),
-                column(11,uiOutput("concept2"))
+                column(11,offset = 1, uiOutput("about1"))
                 ),
               fluidRow(
                 column(1,img(src = "right.png", width = 30)),
-                column(11,uiOutput("concept3"))
+                column(11,uiOutput("about2"))
+              ),br(),
+              fluidRow(
+                column(11,offset = 1, uiOutput("background1"))
               ),
-              hr(),
+              fluidRow(
+                column(1,img(src = "right.png", width = 30)),
+                column(11,uiOutput("background2"))
+                ),
+              fluidRow(
+                column(1,img(src = "right.png", width = 30)),
+                column(11,uiOutput("background3"))
+              ),
+              br(),
               fluidRow(
                 column(11,offset = 1, uiOutput("instruction1"))
-              ),br(),
+              ),
               fluidRow(
                 column(1,img(src = "right.png", width = 30)),
                 column(11,uiOutput("instruction2"))
@@ -45,6 +52,13 @@ ui <- dashboardPage(skin = "black",
               fluidRow(
                 column(1,img(src = "right.png", width = 30)),
                 column(11,uiOutput("instruction4"))
+              ),br(),
+              fluidRow(
+                column(11,offset = 1, uiOutput("ack1"))
+              ),
+              fluidRow(
+                column(1,img(src = "right.png", width = 30)),
+                column(11, uiOutput("ack2"))
               )
               
               ),
@@ -70,11 +84,13 @@ ui <- dashboardPage(skin = "black",
               fluidRow(
                 column(4, offset = 4, 
                        bsButton("submit",label = "Submit",type = "toggle", size = "large", value = FALSE, disabled = TRUE),
-                       bsPopover("submit","","Click here to submit your answer or start again.",placement = "top"),
                        bsButton("new",label = "Next>>", style = "danger", size = "large", disabled = TRUE)
                        ),
-                column(1, offset = 3,
-                       conditionalPanel("input.submit != 0", img(src = "arrow.gif", width = 60)))
+                column(3, offset = 1,
+                       conditionalPanel("input.submit != 0", 
+                                        wellPanel(
+                                          div(style = "position: relative; top:0",print("Scroll down to see more")),
+                                          img(src = "arrow.gif", width = 40), class = "arrow")))
               ),
               fluidRow(
                 hr(),
