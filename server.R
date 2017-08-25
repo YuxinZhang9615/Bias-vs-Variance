@@ -26,7 +26,7 @@ shinyServer(function(input, output,session) {
     print("Instruction")
   )
   output$instruction2 <- renderUI(
-    print("Step 1: Click the plot to put down at least 10 points.")   
+    print("Step 1: Click the target to put down at least 10 points.")   
   )
   output$instruction3 <- renderUI(
     print("Step 2: Check the feedback and keep trying until you get it correct and go to the next question.")
@@ -172,8 +172,6 @@ shinyServer(function(input, output,session) {
         print("Great! Nicely done!")
       }else if ((var$bias > 3) & (var$reliability > 2.5)){
         print("Good job!")
-      }else if ((var$bias > 2.5) & (var$reliability > 2)){
-        print("Not bad! Try again.")
       }else{
         print("You can do better. Try again.")
       }
@@ -182,8 +180,6 @@ shinyServer(function(input, output,session) {
         print("Great! Nicely done!")
       }else if ((var$bias > 3) & (var$reliability < 2)){
         print("Good job!")
-      }else if ((var$bias > 2) & (var$reliability < 2)){
-        print("Not bad! Try again.")
       }else{
         print("You can do better. Try again.")
       }
@@ -192,8 +188,6 @@ shinyServer(function(input, output,session) {
         print("Great! Nicely done!")
       }else if ((var$bias < 0.3) & (var$reliability > 2.5)){
         print("Good job!")
-      }else if ((var$bias < 0.5) & (var$reliability > 2)){
-        print("Not bad! Try again.")
       }else{
         print("You can do better. Try again.")
       }
@@ -202,8 +196,6 @@ shinyServer(function(input, output,session) {
         print("Great! Nicely done!")
       }else if ((var$bias < 0.3) & (var$reliability < 2)){
         print("Good job!")
-      }else if ((var$bias < 0.5) & (var$reliability < 2)){
-        print("Not bad! Try again.")
       }else{
         print("You can do better. Try again.")
       }
@@ -246,20 +238,28 @@ shinyServer(function(input, output,session) {
       quad = "bottom right"
     }
     
-    if (var$bias > 3){
-      biasFeedback = "large"
+    # if (var$bias < 0.25){
+    #   biasFeedback = "very small"
+    # }else if(var$bias < 0.3){
+    #   biasFeedback = "relatively small"
+    # }else{
+    #   biasFeedback = "large"
+    # }
+  
+    if (var$reliability > 3){
+      reliaFeedback = ", with a low reliability."
+    }else if (var$reliability > 2.5){
+      reliaFeedback = ", with a relatively low reliability."
+    }else if (var$reliability < 1.5){
+      reliaFeedback = ", with a relatively high reliability."
+    }else if (var$reliability < 2){
+      reliaFeedback = ", with a high reliability."
     }else{
-      biasFeedback = "small"
+      reliaFeedback = "."
     }
     
-    if (var$reliability > 2.5){
-      reliaFeedback = "low"
-    }else{
-      reliaFeedback = "high"
-    }
-    
-    paste("The dots you put down are centered at the",quad,"quadrant, with a relatively",biasFeedback,
-          "bias and",reliaFeedback,"reliability.")
+    paste("The dots you put down are centered at the",quad,"quadrant,",signif(var$bias, 2),
+          "away from the center",reliaFeedback)
     
 
   })
