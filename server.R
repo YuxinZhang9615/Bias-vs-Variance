@@ -42,8 +42,10 @@ shinyServer(function(input, output,session) {
     print("This app was developed and coded by Yuxin Zhang.")
   )
   
+  #Create reactiveValues to restore the coordinates of clicked points and the calculated bias and reliability
   var <- reactiveValues(x = NULL, y = NULL, bias = NULL, reliability = NULL)
   
+  #Randomly generate one question out of the four questions every time when "Next" button is clicked.
   index <- reactiveValues(index = 4)
   observeEvent(input$new,{
     index$index <- sample(1:4,1)
@@ -92,7 +94,7 @@ shinyServer(function(input, output,session) {
     box(col = "red")
   }
   
-##Use above three functions to code the output for tab1     
+  #Save the clicked points or clear all.    
   observe({
     # Initially will be empty
     if (is.null(input$Click)){
@@ -105,6 +107,7 @@ shinyServer(function(input, output,session) {
     })
   })
   
+  #Only when the user clicks more than 10 points, can the "submit" button be enabled.
   observe({
     if (length(var$x) >= 10){
       updateButton(session,"submit",label = "Submit",style = "danger", size = "large", disabled = FALSE)
@@ -123,6 +126,7 @@ shinyServer(function(input, output,session) {
     }
   })
   
+##Set the related relationship between two buttons: "submit" "try again" "next"  
   observe({
     if (length(var$x) == 1){
       updateButton(session,"submit", label = "Submit", disabled = TRUE)
@@ -134,7 +138,7 @@ shinyServer(function(input, output,session) {
     updateButton(session, "submit", label = "Submit",value = FALSE, disabled = TRUE)
   })
 
-  
+##Plot three outputs using the functions defined before  
   output$target <- renderPlot({
     plotTarget(var$x,var$y)
   },height = 320, width = 320)
@@ -157,7 +161,7 @@ shinyServer(function(input, output,session) {
     }
   })
   
-
+##Display the numeric results and limit the digits.
   output$bias <- renderText({
     print(round(var$bias, digits = 2))
   })
@@ -166,7 +170,10 @@ shinyServer(function(input, output,session) {
     print(round(var$reliability, digits = 2))
   })
 
+##Assess the answers given by the user.
   output$answer <- renderUI({
+    #Four questions.
+    #For each question, there are three leveled responses.
     if (index$index == 1){
       if ((var$bias > 4) & (var$reliability > 3)){
         print("Great! Nicely done!")
@@ -201,7 +208,8 @@ shinyServer(function(input, output,session) {
       }
     }
   })
-  
+
+  #The "next" button cannot be enabled until the user answers correctly. 
   observe({
     if (input$submit == TRUE){
       if ((index$index == 1) & (var$bias > 3) & (var$reliability > 2.5)){
@@ -220,6 +228,7 @@ shinyServer(function(input, output,session) {
     }
   })
 
+##Print feedbacks.  
   output$feedback1 <- renderUI({
     paste("Average bias = ",round(var$bias,digits = 2),"(smaller values indicate less bias)")
   }) 
@@ -227,7 +236,7 @@ shinyServer(function(input, output,session) {
     paste("Average reliability = ", round(var$reliability,digits = 2), "(smaller values indicate better reliability)")
   })
   output$feedback3 <- renderUI({
-    
+    #which quadrants
     if ((mean(var$x) > 0 ) & (mean(var$y) > 0)){
       quad = "upper right"
     }else if ((mean(var$x) < 0) & (mean(var$y) > 0 )){
@@ -238,14 +247,7 @@ shinyServer(function(input, output,session) {
       quad = "bottom right"
     }
     
-    # if (var$bias < 0.25){
-    #   biasFeedback = "very small"
-    # }else if(var$bias < 0.3){
-    #   biasFeedback = "relatively small"
-    # }else{
-    #   biasFeedback = "large"
-    # }
-  
+    #reliability
     if (var$reliability > 3){
       reliaFeedback = ", with a low reliability."
     }else if (var$reliability > 2.5){
@@ -258,6 +260,7 @@ shinyServer(function(input, output,session) {
       reliaFeedback = "."
     }
     
+    #paste together the feedbacks and print them out.
     paste("The dots you put down are centered at the",quad,"quadrant,",signif(var$bias, 2),
           "away from the center",reliaFeedback)
     

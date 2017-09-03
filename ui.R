@@ -76,10 +76,6 @@ ui <- dashboardPage(skin = "black",
                                   bsPopover("plota", "Bias", "Smaller values indicate less bias.",placement = "top")),
                            column(6,plotOutput("plotb"), style = "height: 320px;",
                                   bsPopover("plotb", "Reliability", "Smaller values indicate better reliability.",placement = "top")))
-                         # fluidRow(
-                         #   column(4,offset = 2,h4(textOutput("bias"))),
-                         #   column(4,offset = 2,h4(textOutput("reliability")))
-                         # )
                          ))),
               fluidRow(
                 column(4, offset = 4, 
