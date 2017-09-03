@@ -32,7 +32,10 @@ aside.main-sidebar {
 .wellfeedback {
   height: 100px;
   text-align: center;
-  padding-top:5px; 
+  padding-top: 5px; 
+  padding-left: 0;
+  padding-right: 0;
+  
 }
 
 #about1 {
