@@ -5,31 +5,42 @@ library(shinyBS)
 shinyServer(function(input, output,session) {
   
   #Text on the instruction page
-  output$concept1 <- renderUI(
-    print("Concepts: Bias and Reliability")
+  output$about1 <- renderUI(
+    print("About")
   )
-  output$concept2 <- renderText(
-    print("Reliability is the extent to which an experiment, test, or any measuring procedure
-   yields the same result on repeated trials.")
+  output$about2 <- renderUI(
+    print("Understand concepts bias and reliability in sampling.")
   )
-  output$concept3 <- renderUI(
-    print("Validity refers to the degree to 
-          which a study accurately reflects or assesses the specific concept that the researcher
-          is attemping to measure.")
+  output$background1 <- renderUI(
+    print("Background: Bias and Reliability")
+  )
+  output$background2 <- renderUI(
+    print("The bias of a measurement describes to what degree it is systematically off target from the true value.")
+  )
+  output$background3 <- renderUI(
+    print("The reliability of a measurement describes how consistent the measurement is when you repeat it 
+          (alternatively, an unreliable measurement is one that shows a lot of variability from value to value 
+          when the measurement is repeated independently). ")
   )
   output$instruction1 <- renderUI(
     print("Instruction")
   )
   output$instruction2 <- renderUI(
-    print("Step1: Click the plot to put down at least 10 points by mouse.")   
+    print("Step 1: Click the target to put down at least 10 points.")   
   )
   output$instruction3 <- renderUI(
-    print("Step2: Click 'try' button to view the result.")
+    print("Step 2: Check the feedback and keep trying until you get it correct and go to the next question.")
   )
   output$instruction4 <- renderUI(
-    print('Step3: Click "try" to restart clicking points if you got it wrong.')
+    print('Note: There are only four different questions.')
   )
   
+  output$ack1 <- renderUI(
+    print("Acknowledgement and Credit")
+  )
+  output$ack2 <- renderUI(
+    print("This app was developed and coded by Yuxin Zhang.")
+  )
   
   var <- reactiveValues(x = NULL, y = NULL, bias = NULL, reliability = NULL)
   
@@ -96,13 +107,13 @@ shinyServer(function(input, output,session) {
   
   observe({
     if (length(var$x) >= 10){
-      updateButton(session,"submit",label = "Try",style = "danger", size = "large", disabled = FALSE)
+      updateButton(session,"submit",label = "Submit",style = "danger", size = "large", disabled = FALSE)
     }
   })
   
   #Reset the button to FALSE so that all the conditionalPanel will disappear
   observeEvent(input$submit,{{
-    updateButton(session,"submit",label = "Try",style = "danger",size = "large")
+    updateButton(session,"submit",label = "Try again",style = "danger",size = "large")
   }})
   #Reset(clear) the clicked points
   observe({
@@ -114,13 +125,13 @@ shinyServer(function(input, output,session) {
   
   observe({
     if (length(var$x) == 1){
-      updateButton(session,"submit",disabled = TRUE)
+      updateButton(session,"submit", label = "Submit", disabled = TRUE)
     }
   })
 
 
   observeEvent(input$new,{
-    updateButton(session, "submit", value = FALSE, disabled = TRUE)
+    updateButton(session, "submit", label = "Submit",value = FALSE, disabled = TRUE)
   })
 
   
@@ -161,8 +172,6 @@ shinyServer(function(input, output,session) {
         print("Great! Nicely done!")
       }else if ((var$bias > 3) & (var$reliability > 2.5)){
         print("Good job!")
-      }else if ((var$bias > 2.5) & (var$reliability > 2)){
-        print("Not bad! Try again.")
       }else{
         print("You can do better. Try again.")
       }
@@ -171,8 +180,6 @@ shinyServer(function(input, output,session) {
         print("Great! Nicely done!")
       }else if ((var$bias > 3) & (var$reliability < 2)){
         print("Good job!")
-      }else if ((var$bias > 2) & (var$reliability < 2)){
-        print("Not bad! Try again.")
       }else{
         print("You can do better. Try again.")
       }
@@ -181,8 +188,6 @@ shinyServer(function(input, output,session) {
         print("Great! Nicely done!")
       }else if ((var$bias < 0.3) & (var$reliability > 2.5)){
         print("Good job!")
-      }else if ((var$bias < 0.5) & (var$reliability > 2)){
-        print("Not bad! Try again.")
       }else{
         print("You can do better. Try again.")
       }
@@ -191,8 +196,6 @@ shinyServer(function(input, output,session) {
         print("Great! Nicely done!")
       }else if ((var$bias < 0.3) & (var$reliability < 2)){
         print("Good job!")
-      }else if ((var$bias < 0.5) & (var$reliability < 2)){
-        print("Not bad! Try again.")
       }else{
         print("You can do better. Try again.")
       }
@@ -224,43 +227,41 @@ shinyServer(function(input, output,session) {
     paste("Average reliability = ", round(var$reliability,digits = 2), "(smaller values indicate better reliability)")
   })
   output$feedback3 <- renderUI({
-    if ((var$x > 0) & (var$y > 0) & (var$bias > 3) & (var$reliability > 2.5)){
-      print("The dots you put down are centered on the first quadrant, with a relatively large bias and low reliability.")
-    }else if ((var$x > 0) & (var$y > 0) & (var$bias > 3) & (var$reliability <= 2.5)){
-      print("The dots you put down are centered on the first quadrant, with a relatively large bias and high reliability.")
-    }else if ((var$x > 0) & (var$y > 0) & (var$bias <= 3) & (var$reliability > 2.5)){
-      print("The dots you put down are centered on the first quadrant, with a relatively small bias and low reliability.")
-    }else if ((var$x > 0) & (var$y > 0) & (var$bias <= 3) & (var$reliability <= 2.5)){
-      print("The dots you put down are centered on the first quadrant, with a relatively small bias and high reliability.")
     
-    }else if ((var$x < 0) & (var$y > 0) & (var$bias > 3) & (var$reliability > 2.5)){
-      print("The dots you put down are centered on the second quadrant, with a relatively large bias and low reliability.")
-    }else if ((var$x < 0) & (var$y > 0) & (var$bias > 3) & (var$reliability <= 2.5)){
-      print("The dots you put down are centered on the second quadrant, with a relatively large bias and high reliability.")
-    }else if ((var$x < 0) & (var$y > 0) & (var$bias <= 3) & (var$reliability > 2.5)){
-      print("The dots you put down are centered on the second quadrant, with a relatively small bias and low reliability.")
-    }else if ((var$x < 0) & (var$y > 0) & (var$bias <= 3) & (var$reliability <= 2.5)){
-      print("The dots you put down are centered on the second quadrant, with a relatively small bias and high reliability.")
-    
-    }else if ((var$x < 0) & (var$y < 0) & (var$bias > 3) & (var$reliability > 2.5)){
-      print("The dots you put down are centered on the third quadrant, with a relatively large bias and low reliability.")
-    }else if ((var$x < 0) & (var$y < 0) & (var$bias > 3) & (var$reliability <= 2.5)){
-      print("The dots you put down are centered on the third quadrant, with a relatively large bias and high reliability.")
-    }else if ((var$x < 0) & (var$y < 0) & (var$bias <= 3) & (var$reliability > 2.5)){
-      print("The dots you put down are centered on the third quadrant, with a relatively small bias and low reliability.")
-    }else if ((var$x < 0) & (var$y < 0) & (var$bias <= 3) & (var$reliability <= 2.5)){
-      print("The dots you put down are centered on the third quadrant, with a relatively small bias and high reliability.")
-    
-    }else if ((var$x > 0) & (var$y > 0) & (var$bias > 3) & (var$reliability > 2.5)){
-      print("The dots you put down are centered on the forth quadrant, with a relatively large bias and low reliability.")
-    }else if ((var$x > 0) & (var$y > 0) & (var$bias > 3) & (var$reliability <= 2.5)){
-      print("The dots you put down are centered on the forth quadrant, with a relatively large bias and high reliability.")
-    }else if ((var$x > 0) & (var$y > 0) & (var$bias <= 3) & (var$reliability > 2.5)){
-      print("The dots you put down are centered on the forth quadrant, with a relatively small bias and low reliability.")
-    }else if ((var$x > 0) & (var$y > 0) & (var$bias <= 3) & (var$reliability <= 2.5)){
-      print("The dots you put down are centered on the forth quadrant, with a relatively small bias and high reliability.")
+    if ((mean(var$x) > 0 ) & (mean(var$y) > 0)){
+      quad = "upper right"
+    }else if ((mean(var$x) < 0) & (mean(var$y) > 0 )){
+      quad = "upper left"
+    }else if ((mean(var$x) < 0) & (mean(var$y) < 0)){
+      quad = "bottom left"
+    }else if ((mean(var$x) > 0) & (mean(var$y) < 0)){
+      quad = "bottom right"
     }
     
+    # if (var$bias < 0.25){
+    #   biasFeedback = "very small"
+    # }else if(var$bias < 0.3){
+    #   biasFeedback = "relatively small"
+    # }else{
+    #   biasFeedback = "large"
+    # }
+  
+    if (var$reliability > 3){
+      reliaFeedback = ", with a low reliability."
+    }else if (var$reliability > 2.5){
+      reliaFeedback = ", with a relatively low reliability."
+    }else if (var$reliability < 1.5){
+      reliaFeedback = ", with a relatively high reliability."
+    }else if (var$reliability < 2){
+      reliaFeedback = ", with a high reliability."
+    }else{
+      reliaFeedback = "."
+    }
+    
+    paste("The dots you put down are centered at the",quad,"quadrant,",signif(var$bias, 2),
+          "away from the center",reliaFeedback)
+    
+
   })
   
   
