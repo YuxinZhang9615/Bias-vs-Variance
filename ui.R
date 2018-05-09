@@ -15,7 +15,7 @@ ui <- dashboardPage(skin = "black",
   ),
   dashboardBody(
     tags$head(
-      tags$link(rel = "stylesheet", type = "text/css", href = "navcolor.css")
+      tags$link(rel = "stylesheet", type = "text/css", href = "navcolor.css") #customised style sheet
     ),
     tabItems(
       tabItem(tabName = "instruction",
@@ -80,12 +80,13 @@ ui <- dashboardPage(skin = "black",
               fluidRow(
                 column(4, offset = 4, 
                        bsButton("submit",label = "Submit",type = "toggle", size = "large", value = FALSE, disabled = TRUE),
-                       bsButton("new",label = "Next>>", style = "danger", size = "large", disabled = TRUE)
+                       bsButton("new",label = "Next>>", style = "danger", size = "large"),
+                       bsButton('clear', label = "Clear", style = 'danger', size = 'large')
                        ),
                 column(3, offset = 1,
                        conditionalPanel("input.submit != 0", 
                                         wellPanel(
-                                          div(style = "position: relative; top:0",print("Scroll down to see more")),
+                                          div(style = "position: relative; top:0",print("Feedback")),
                                           img(src = "arrow.gif", width = 40), class = "arrow")))
               ),
               fluidRow(
