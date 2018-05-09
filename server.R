@@ -116,7 +116,7 @@ shinyServer(function(input, output,session) {
   
   #Reset the button to FALSE so that all the conditionalPanel will disappear
   observeEvent(input$submit,{{
-    updateButton(session,"submit",label = "Try again",style = "danger",size = "large")
+    updateButton(session,"submit",label = "Submit",style = "danger",size = "large", disabled = T)
   }})
   #Reset(clear) the clicked points
   observe({
@@ -125,17 +125,34 @@ shinyServer(function(input, output,session) {
       var$y <- NULL
     }
   })
+  observeEvent(input$clear,{
+    if (input$submit == FALSE){
+      var$x <- NULL
+      var$y <- NULL
+    }
+  })
+
+ 
   
-##Set the related relationship between two buttons: "submit" "try again" "next"  
+##Set the related relationship between three buttons: "submit" "clear" "next"  
   observe({
     if (length(var$x) == 1){
       updateButton(session,"submit", label = "Submit", disabled = TRUE)
     }
   })
-
+  observeEvent(input$submit,{
+    updateButton(session,"clear", label = "Clear", disabled = TRUE)
+  })
+  observeEvent(input$new,{
+    updateButton(session,"clear", label = "Clear", disabled = FALSE)
+  })
 
   observeEvent(input$new,{
     updateButton(session, "submit", label = "Submit",value = FALSE, disabled = TRUE)
+  })
+  #The "next" button will be enabled once the user hits submit. 
+  observeEvent(input$submit,{
+    updateButton(session, "new", disabled = FALSE)
   })
 
 ##Plot three outputs using the functions defined before  
@@ -209,24 +226,7 @@ shinyServer(function(input, output,session) {
     }
   })
 
-  #The "next" button cannot be enabled until the user answers correctly. 
-  observe({
-    if (input$submit == TRUE){
-      if ((index$index == 1) & (var$bias > 3) & (var$reliability > 2.5)){
-        updateButton(session, "new", disabled = FALSE)
-      }else if ((index$index == 2) & (var$bias > 3) & (var$reliability < 2)){
-        updateButton(session, "new", disabled = FALSE)
-      }else if ((index$index == 3) & (var$bias < 0.3) & (var$reliability > 2.5)){
-        updateButton(session, "new", disabled = FALSE)
-      }else if ((index$index == 4) & (var$bias < 0.3) & (var$reliability < 2)){
-        updateButton(session, "new", disabled = FALSE)
-      }else{
-        updateButton(session, "new", disabled = TRUE)
-      }
-    }else{
-      updateButton(session, "new", disabled = TRUE)
-    }
-  })
+  
 
 ##Print feedbacks.  
   output$feedback1 <- renderUI({
